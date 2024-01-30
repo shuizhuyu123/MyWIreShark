@@ -4,9 +4,9 @@ Analyse::Analyse(pcap_pkthdr* Packet_Header,const UCHAR* Packet_Data,MyWinshark 
 	: Packet_Header(Packet_Header),Packet_Data(Packet_Data),window(window)
 {}
 void Analyse::run() {
-	QByteArray byteArray;
-	byteArray.resize(Packet_Header->len);
-	memcpy(byteArray.data(), Packet_Data, Packet_Header->len);
+	
+	content.resize(Packet_Header->caplen);
+	memcpy(content.data(), Packet_Data, Packet_Header->caplen);
 	unpack();
 }
 void Analyse::unpack() {

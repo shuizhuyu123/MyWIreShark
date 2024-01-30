@@ -19,6 +19,9 @@ public:
     void setConnect();
     void setSniffer();
     void setWindow();
+    void setinformation(QString type,int number);
+    void setEthernet(int number);
+    void setIP(int number);
     Q_INVOKABLE void setitem(QStringList summary, QByteArray data);
     ~MyWinshark();
 

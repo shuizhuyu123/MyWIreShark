@@ -113,11 +113,11 @@ unsigned int MyWinshark::setIP(int number) {
     QList<QTreeWidgetItem*>children;
 
     list.clear();
-    list << "Version:" << QString::number(ipheader->version, 2).rightJustified(4, '0')+"....";
+    list << "Version:" << QString::number(ipheader->version, 2).rightJustified(4, '0') + "...." << QString::number(ipheader->version);
     children.append(new QTreeWidgetItem(list));
 
     list.clear();
-    list << "Header length:" << "...."+QString::number(ipheader->m_HDlen,2).rightJustified(4, '0');
+    list << "Header length:" << "...." + QString::number(ipheader->m_HDlen, 2).rightJustified(4, '0') << QString::number(ipheader->m_HDlen*4);
     children.append(new QTreeWidgetItem(list));
 
     list.clear();
@@ -216,10 +216,93 @@ void MyWinshark::setinformation(QString type, int number) {
     }
     if (type == "UDP") {
         setEthernet(number);
-        setIP(number);
+        unsigned short iphdlen = setIP(number);
+        udp_header* udp = (udp_header*)(information[number].constData() + 14 + iphdlen);
+        unsigned short srcport = ntohs(udp->sport);
+        unsigned short dstport = ntohs(udp->dport);
+        QStringList list;
+        list << "User Datagram Protocol" << "Src Port:" << QString::number(srcport) << "Dst Port:" << QString::number(dstport);
+        QTreeWidgetItem* item = new QTreeWidgetItem(list);
+        ui.treeWidget->addTopLevelItem(item);
+        QList<QTreeWidgetItem*>children;
+
+        list.clear();
+        list << "Source Port:" << QString::number(srcport);
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Dst Port:" << QString::number(dstport);
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Length:" << "0x" + QString::number(ntohs(udp->datalen));
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Checksum:" <<"0x"+QString::number(ntohs(udp->checksum),16).rightJustified(4,'0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Data";
+        QTreeWidgetItem* data = new QTreeWidgetItem(list);
+        list.clear();
+        list << QString::fromUtf8(QByteArray(information[number].constData() + 14 + iphdlen + sizeof(udp_header), information[number].size() - (14 + iphdlen + sizeof(udp_header))).toHex());
+        QTreeWidgetItem* content = new QTreeWidgetItem(list);
+        content->setToolTip(0, list[0]);
+        data->addChild(content);
+        children.append(data);
+
+        item->addChildren(children);
     }
     if (type == "ICMP") {
+        setEthernet(number);
+        unsigned short iphdlen = setIP(number);
+        icmphead* icmp = (icmphead*)(information[number].constData() + 14 + iphdlen);
+        QStringList list;
+        list << "Internet Control Message Protocol";
+        QTreeWidgetItem* item = new QTreeWidgetItem(list);
+        ui.treeWidget->addTopLevelItem(item);
+        QList<QTreeWidgetItem*>children;
 
+        list.clear();
+        list << "Type" << QString::number(icmp->m_byType);
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Code" << QString::number(icmp->m_byCode);
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Checksum" <<"0x"+ QString::number(ntohs(icmp->m_usChecksum),16).rightJustified(4,'0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Identifier(BE)" << QString::number(icmp->m_usID)<< "0x" + QString::number(icmp->m_usID, 16).rightJustified(4, '0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Identifier(LE)" << QString::number(ntohs(icmp->m_usID)) << "0x" + QString::number(ntohs(icmp->m_usID), 16).rightJustified(4, '0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "SeqNumber(BE)" << QString::number(icmp->m_usSeq) << "0x" + QString::number(icmp->m_usSeq, 16).rightJustified(4, '0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "SeqNumber(LE)" << QString::number(ntohs(icmp->m_usSeq)) << "0x" + QString::number(ntohs(icmp->m_usSeq), 16).rightJustified(4, '0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Data";
+        QTreeWidgetItem* data = new QTreeWidgetItem(list);
+        list.clear();
+        list <<QString::fromUtf8(QByteArray(information[number].constData() + 14 + iphdlen + sizeof(icmphead), information[number].size() - (14 + iphdlen + sizeof(icmphead))).toHex());
+        QTreeWidgetItem* content = new QTreeWidgetItem(list);
+        content->setToolTip(0, list[0]);
+        data->addChild(content);
+        children.append(data);
+
+        item->addChildren(children);
     }
 }
 MyWinshark::~MyWinshark()

@@ -33,9 +33,16 @@ typedef struct tcp_header
 }tcp_header;
 typedef struct udp_header
 {
-    unsigned int sport;   // 源端口
-    unsigned int dport;   // 目标端口
-    unsigned char zero;     // 保留位
-    unsigned char proto;    // 协议标识
+    unsigned short sport;   // 源端口
+    unsigned short dport;   // 目标端口
     unsigned short datalen; // UDP数据长度
+    unsigned short checksum;//校验和
 }udp_header;
+typedef struct ICMPHeader
+{
+    BYTE m_byType;					// 类型
+    BYTE m_byCode;					// 代码
+    unsigned short m_usChecksum;			// 检验和
+    unsigned short m_usID;					// 标识符
+    unsigned short m_usSeq;					// 序号
+}icmphead;

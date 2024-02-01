@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QThread>
 #include <QThreadPool>
+#include <QByteArray>
 #include "Constant.h"
 #include "Sniffer.h"
 #include "ui_MyWinshark.h"

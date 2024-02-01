@@ -21,7 +21,7 @@ public:
     void setWindow();
     void setinformation(QString type,int number);
     void setEthernet(int number);
-    void setIP(int number);
+    unsigned int setIP(int number);
     Q_INVOKABLE void setitem(QStringList summary, QByteArray data);
     ~MyWinshark();
 
@@ -30,12 +30,10 @@ private:
     QMap<QString, pcap_if_t*> adapters;
     QMap<int, QByteArray> information;
     Sniffer* sniffer = NULL;
-    QThread* thread = NULL;
     pcap_if_t* adapter = NULL;
     QVector<QStringList> summary;
     QTimer* timer = NULL;
     Ui::MyWinsharkClass ui;
 signals:
     void endSniff();
-
 };

@@ -4,18 +4,18 @@ MyWinshark::MyWinshark(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
+    
     setSniffer();
     setConnect();
     setWindow();
 }
 
 void MyWinshark::setSniffer()
-{
-    sniffer = new Sniffer();
+{   
+    sniffer = new Sniffer(this);
     adapters = sniffer->findAdapters();
-    thread = new QThread();
     timer = new QTimer(this);
-    
+    connect(this, &MyWinshark::endSniff, sniffer, &Sniffer::endSniff);
 }
 void MyWinshark::setWindow()
 {
@@ -26,6 +26,12 @@ void MyWinshark::setWindow()
     ui.tableWidget->setColumnWidth(1, 300);
     ui.tableWidget->setColumnWidth(2, 300);
     ui.tableWidget->setColumnWidth(3, 200);
+    
+    ui.treeWidget->setColumnWidth(0, 200);
+    ui.treeWidget->setColumnWidth(1, 200);
+    ui.treeWidget->setColumnWidth(2, 200);
+    ui.treeWidget->setColumnWidth(3, 200);
+
 
 }
 void MyWinshark::setConnect()
@@ -33,19 +39,14 @@ void MyWinshark::setConnect()
     
     connect(ui.start, &QToolButton::clicked, this, [=] {
         adapter = adapters["Network adapter 'MediaTek Wi-Fi 6 MT7921 Wireless LAN Card' on local host"];
-        sniffer->moveToThread(thread);
-        connect(thread, &QThread::started, sniffer, [=] {
-            sniffer->startSniff(adapter, this);
-            });
-        thread->start();
+        sniffer->setAdapter(adapter);
+        sniffer->start();
         timer->start(1000);
     });
     connect(ui.end, &QToolButton::clicked, this, [=] {
         timer->stop();
         emit endSniff();
-        QThreadPool::globalInstance()->clear();
-        QThreadPool::globalInstance()->waitForDone();
-        thread->quit();
+        sniffer->quit();
     });
     connect(timer, &QTimer::timeout, this, [=] {
         for (auto item : summary) {
@@ -100,7 +101,7 @@ void MyWinshark::setEthernet(int number) {
     item->addChildren(children);
 
 }
-void MyWinshark::setIP(int number) {
+unsigned int MyWinshark::setIP(int number) {
     iphead* ipheader = (iphead*)(information[number].constData() + 14);
     QStringList list;
     char src[32], dst[32];
@@ -121,10 +122,6 @@ void MyWinshark::setIP(int number) {
 
     list.clear();
     list << "Tos:" << QString::number(ipheader->m_byTOS, 2).rightJustified(8, '0');
-    children.append(new QTreeWidgetItem(list));
-
-    list.clear();
-    list << "Total length:" << QString::number(ntohs(ipheader->m_byTotalLen));
     children.append(new QTreeWidgetItem(list));
 
     list.clear();
@@ -154,13 +151,68 @@ void MyWinshark::setIP(int number) {
     children.append(new QTreeWidgetItem(list));
 
     item->addChildren(children);
-
+    return ipheader->m_HDlen * 4;
 }
 void MyWinshark::setinformation(QString type, int number) {
     if (type == "TCP") {
         setEthernet(number);
-        setIP(number);
+        unsigned short iphdlen=setIP(number);
+        tcp_header* tcp = (tcp_header*)(information[number].constData() + 14 + iphdlen);
+        unsigned short srcport = ntohs(tcp->SourPort);
+        unsigned short dstport= ntohs(tcp->DestPort);
+        QStringList list;
+        list << "Transmission Control Protocol " << "Src port:" + QString::number(srcport)<< "Dst port:" + QString::number(dstport);
+        QTreeWidgetItem* item = new QTreeWidgetItem(list);
+        ui.treeWidget->addTopLevelItem(item);
+        QList<QTreeWidgetItem*>children;
 
+        list.clear();
+        list << "Source Port:" << QString::number(srcport);
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Dst Port:" << QString::number(dstport);
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Sequence Number" << QString::number(ntohl(tcp->SequNum));
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Ackonwledge Number" << QString::number(ntohl(tcp->AcknowledgeNum));
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Window Size" << QString::number(ntohs(tcp->WindowSize));
+        children.append(new QTreeWidgetItem(list));
+        
+        list.clear();
+        unsigned char flags = tcp->flags;
+        QString flag;
+        if (flags & 0x10) {
+            flag += "ACK ";
+        }
+        if (flags & 0x08) {
+            flag += "PSH ";
+        }
+        if (flags & 0x01) {
+            flag += "FIN ";
+        }
+        if (flags & 0x04) {
+            flag += "RST ";
+        }
+        list << "Flags:" << "0x" + QString::number(flags, 16).rightJustified(3, '0') << flag;
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Checksum" <<"0x"+QString::number(ntohs(tcp->CheckSum), 16).rightJustified(4, '0');
+        children.append(new QTreeWidgetItem(list));
+
+        list.clear();
+        list << "Urgent Pointer" << QString::number(ntohs(tcp->surgentPointer));
+        children.append(new QTreeWidgetItem(list));
+
+        item->addChildren(children);
     }
     if (type == "UDP") {
         setEthernet(number);
@@ -172,7 +224,10 @@ void MyWinshark::setinformation(QString type, int number) {
 }
 MyWinshark::~MyWinshark()
 {
-    QThreadPool::globalInstance()->clear();
-    QThreadPool::globalInstance()->waitForDone();
-    thread->quit();
+    if (sniffer->isRunning()) {
+        emit endSniff();
+        sniffer->quit();
+        sniffer->wait();
+    }
+    delete sniffer;
 }

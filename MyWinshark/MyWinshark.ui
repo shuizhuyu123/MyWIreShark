@@ -176,6 +176,12 @@
    </item>
    <item>
     <widget class="QTreeWidget" name="treeWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
      <property name="columnCount">
       <number>5</number>
      </property>

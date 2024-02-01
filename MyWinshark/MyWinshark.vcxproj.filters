@@ -40,10 +40,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sniffer.cpp">
+    <ClCompile Include="Analyse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Analyse.cpp">
+    <ClCompile Include="Sniffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

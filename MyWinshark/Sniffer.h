@@ -6,16 +6,24 @@
 #include "MyWinshark.h"
 #include "Analyse.h"
 class MyWinshark;
-class Sniffer  : public QObject
+class Sniffer  : public QThread
 {
 	Q_OBJECT
 
 public:
-	Sniffer();
+	Sniffer(MyWinshark* winodw);
 	QMap<QString, pcap_if_t*> findAdapters();
 	void startSniff(pcap_if_t* adapter, MyWinshark* window);
-	void endSniff() { flag = 0; }
+	void setAdapter(pcap_if_t* adapter) { this->adapter = adapter; }
+	void endSniff();
 	~Sniffer();
+protected:
+	virtual void run() override;
 private:
-	int flag;
+	pcap_if_t* allAdapters=NULL;
+	boolean flag;
+	pcap_if_t* adapter;
+	MyWinshark* window;
+signals:
+	void finished();
 };

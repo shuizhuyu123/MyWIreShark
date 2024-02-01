@@ -59,4 +59,5 @@ void Analyse::unpackIP()
 }
 Analyse::~Analyse()
 {
+	content.clear();
 }

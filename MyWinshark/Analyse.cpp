@@ -5,7 +5,7 @@ Analyse::Analyse(pcap_pkthdr* Packet_Header,const UCHAR* Packet_Data,MyWinshark 
 {}
 void Analyse::run() {
 	
-	content.resize(Packet_Header->caplen);
+	content.resize(Packet_Header->len);
 	memcpy(content.data(), Packet_Data, Packet_Header->caplen);
 	unpack();
 }

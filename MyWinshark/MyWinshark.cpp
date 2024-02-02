@@ -4,7 +4,6 @@ MyWinshark::MyWinshark(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
-    
     setSniffer();
     setConnect();
     setWindow();
@@ -29,15 +28,14 @@ void MyWinshark::setWindow()
     
     ui.treeWidget->setColumnWidth(0, 200);
     ui.treeWidget->setColumnWidth(1, 200);
-    ui.treeWidget->setColumnWidth(2, 200);
-    ui.treeWidget->setColumnWidth(3, 200);
 
-
+    ui.Hex->setColumnWidth(0, 50);
 }
 void MyWinshark::setConnect()
 {   
     
     connect(ui.start, &QToolButton::clicked, this, [=] {
+        information.clear();
         adapter = adapters["Network adapter 'MediaTek Wi-Fi 6 MT7921 Wireless LAN Card' on local host"];
         sniffer->setAdapter(adapter);
         sniffer->start();
@@ -60,10 +58,12 @@ void MyWinshark::setConnect()
     });
     connect(ui.tableWidget, &QTableWidget::itemClicked, this, [=](QTableWidgetItem *item) {
         ui.treeWidget->clear();
+        ui.Hex->clear();
         int row = item->row();
         int number = ui.tableWidget->item(row, 0)->text().toInt();
         QString type = ui.tableWidget->item(row, 3)->text();
         setinformation(type, number);
+        setHex(number);
     });
 }
 void MyWinshark::setitem(QStringList summary, QByteArray data)
@@ -81,7 +81,7 @@ void MyWinshark::setEthernet(int number) {
         src = src.arg(QString::number(eth->ether_shost[i], 16));
         dst = dst.arg(QString::number(eth->ether_dhost[i], 16));
     }
-    list << "Ethernet " << "src:" << src << "dst:" << dst;
+    list << "Ethernet " << "src:"+src << "dst:"+dst;
     QTreeWidgetItem *item = new QTreeWidgetItem(list);
     ui.treeWidget->addTopLevelItem(item);
     QList<QTreeWidgetItem*>children;
@@ -107,7 +107,7 @@ unsigned int MyWinshark::setIP(int number) {
     char src[32], dst[32];
     inet_ntop(AF_INET, &ipheader->m_ulSrcIP, src, sizeof(src));
     inet_ntop(AF_INET, &ipheader->m_ulDestIP, dst, sizeof(dst));
-    list << "Internet Protocal version " + QString::number(ipheader->version)<< "Src:" << src << "Dst" << dst;
+    list << "Internet Protocal version " + QString::number(ipheader->version)<< "Src:"+QString(src) << "Dst"+QString(dst);
     QTreeWidgetItem* item = new QTreeWidgetItem(list);
     ui.treeWidget->addTopLevelItem(item);
     QList<QTreeWidgetItem*>children;
@@ -148,6 +148,14 @@ unsigned int MyWinshark::setIP(int number) {
 
     list.clear();
     list << "Checksum:" <<"0x"+QString::number(ntohs(ipheader->m_usHChecksum), 16).rightJustified(4, '0');
+    children.append(new QTreeWidgetItem(list));
+
+    list.clear();
+    list << "Source Address:" << src;
+    children.append(new QTreeWidgetItem(list));
+
+    list.clear();
+    list << "Destination Address" << dst;
     children.append(new QTreeWidgetItem(list));
 
     item->addChildren(children);
@@ -221,7 +229,7 @@ void MyWinshark::setinformation(QString type, int number) {
         unsigned short srcport = ntohs(udp->sport);
         unsigned short dstport = ntohs(udp->dport);
         QStringList list;
-        list << "User Datagram Protocol" << "Src Port:" << QString::number(srcport) << "Dst Port:" << QString::number(dstport);
+        list << "User Datagram Protocol" << "Src Port:"+QString::number(srcport) << "Dst Port:"+QString::number(dstport);
         QTreeWidgetItem* item = new QTreeWidgetItem(list);
         ui.treeWidget->addTopLevelItem(item);
         QList<QTreeWidgetItem*>children;
@@ -305,6 +313,29 @@ void MyWinshark::setinformation(QString type, int number) {
         item->addChildren(children);
     }
 }
+void MyWinshark::setHex(int number) {
+    int rowCount = information[number].size() / 16 + (information[number].size() % 16 != 0 ? 1 : 0);
+    ui.Hex->setRowCount(rowCount);
+    for (int i = 0; i < information[number].size(); ++i) {
+        int row = i / 16;
+        int col = i % 16 + 1; // +1 因为第一列是行号
+
+        if (col == 1) {
+            // 设置行号，格式为四位十六进制数，不足部分用0填充
+            QTableWidgetItem* item = new QTableWidgetItem(QString::number(row * 16, 16).rightJustified(4, '0').toUpper());
+            ui.Hex->setItem(row, 0, item);
+        }
+
+        // 将字节转换为十六进制字符串
+        QString hexByte = QString::number(static_cast<unsigned char>(information[number][i]), 16).rightJustified(2, '0').toUpper();
+        // 创建表项并填充数据
+        QTableWidgetItem* item = new QTableWidgetItem(hexByte);
+        ui.Hex->setItem(row, col, item);
+        char ch = static_cast<char>(information[number][i]);
+        QString asciiChar = (ch >= 32 && ch <= 126) ? QString(ch) : ".";
+        ui.Hex->setItem(row, col+17, new QTableWidgetItem(asciiChar));
+    }
+}
 MyWinshark::~MyWinshark()
 {
     if (sniffer->isRunning()) {
@@ -312,5 +343,6 @@ MyWinshark::~MyWinshark()
         sniffer->quit();
         sniffer->wait();
     }
+    information.clear();
     delete sniffer;
 }

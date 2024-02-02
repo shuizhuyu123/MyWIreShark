@@ -22,6 +22,7 @@ public:
     void setWindow();
     void setinformation(QString type,int number);
     void setEthernet(int number);
+    void setHex(int number);
     unsigned int setIP(int number);
     Q_INVOKABLE void setitem(QStringList summary, QByteArray data);
     ~MyWinshark();

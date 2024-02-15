@@ -46,9 +46,15 @@
     <ClCompile Include="Sniffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AdapterChoose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Sniffer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AdapterChoose.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -59,5 +65,10 @@
     <ClInclude Include="Analyse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="AdapterChoose.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
 </Project>

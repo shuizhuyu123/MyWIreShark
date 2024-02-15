@@ -5,6 +5,14 @@ typedef struct ether_header
     unsigned char ether_shost[6];    // 源地址
     unsigned short ether_type;       // 以太网类型
 } ether_header;
+typedef struct arphdr
+{
+    unsigned short ar_hrd;
+    unsigned short ar_pro;
+    unsigned char ar_hln;
+    unsigned char ar_pln;
+    unsigned short ar_op;
+}ARP_HEADER;
 typedef struct IPHeader
 {
 	unsigned char m_HDlen : 4;                 // 4位首部长度

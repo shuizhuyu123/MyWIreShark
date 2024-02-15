@@ -34,14 +34,15 @@ void MyWinshark::setWindow()
 void MyWinshark::setConnect()
 {   
     
-    connect(ui.start, &QToolButton::clicked, this, [=] {
-        information.clear();
-        adapter = adapters["Network adapter 'MediaTek Wi-Fi 6 MT7921 Wireless LAN Card' on local host"];
-        sniffer->setAdapter(adapter);
-        sniffer->start();
-        timer->start(1000);
+    connect(ui.start, &QToolButton::clicked, this, [=](){
+        QStringList list = adapters.keys();
+        choose = new AdapterChoose(list);
+        choose->setChoose(std::bind(&MyWinshark::chooseadapter, this, std::placeholders::_1));
+        choose->setConfirm(std::bind(&MyWinshark::startSniffer, this));
+        choose->show();
     });
     connect(ui.end, &QToolButton::clicked, this, [=] {
+        ui.start->setEnabled(true);
         timer->stop();
         emit endSniff();
         sniffer->quit();
@@ -100,6 +101,17 @@ void MyWinshark::setEthernet(int number) {
 
     item->addChildren(children);
 
+}
+void MyWinshark::startSniffer()
+{
+    information.clear();
+    ui.tableWidget->clearContents();
+    ui.treeWidget->clear();
+    ui.Hex->clear();
+    ui.start->setEnabled(false);
+    sniffer->setAdapter(adapters[adapter]);
+    sniffer->start();
+    timer->start(1000);
 }
 unsigned int MyWinshark::setIP(int number) {
     iphead* ipheader = (iphead*)(information[number].constData() + 14);

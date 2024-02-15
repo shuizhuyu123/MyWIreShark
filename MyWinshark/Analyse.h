@@ -17,6 +17,7 @@ public:
 	virtual void run() override;
 	void unpack();
 	void unpackIP();
+	void unpackARP() { ; };
 	~Analyse(); 
 private:
 	QByteArray content;

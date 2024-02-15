@@ -107,9 +107,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AdapterChoose.cpp" />
     <ClCompile Include="Analyse.cpp" />
     <ClCompile Include="Sniffer.cpp" />
     <QtRcc Include="MyWinshark.qrc" />
+    <QtUic Include="AdapterChoose.ui" />
     <QtUic Include="MyWinshark.ui" />
     <QtMoc Include="MyWinshark.h" />
     <ClCompile Include="MyWinshark.cpp" />
@@ -119,6 +121,7 @@
     <QtMoc Include="Sniffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="AdapterChoose.h" />
     <ClInclude Include="Analyse.h" />
   </ItemGroup>
   <ItemGroup>

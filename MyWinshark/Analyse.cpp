@@ -15,6 +15,9 @@ void Analyse::unpack() {
 	case 0x0800: {
 		unpackIP();
 	}
+	case 0x0806:{
+		unpackARP();
+	}
 	}
 }
 void Analyse::unpackIP()

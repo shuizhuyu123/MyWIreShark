@@ -1,6 +1,6 @@
 #include "Sniffer.h"
 
-Sniffer::Sniffer(MyWinshark* window):window(window)
+Sniffer::Sniffer(MyWireShark* window):window(window)
 {
 
 }
@@ -24,18 +24,23 @@ void Sniffer::run()
 	startSniff(adapter,window);
 }
 
-void Sniffer::startSniff(pcap_if_t* adapter,MyWinshark* window)
+void Sniffer::startSniff(pcap_if_t* adapter,MyWireShark* window)
 {	
 	flag = true;
 	pcap_t*handle = pcap_open(adapter->name, 65534, 1, PCAP_OPENFLAG_PROMISCUOUS, 0, 0);
-	pcap_pkthdr* Packet_Header;    // 数据包头
-	const u_char* Packet_Data;    // 数据本身
+	pcap_pkthdr* Packet_Header;    
+	const u_char* Packet_Data;    
 	int retValue;
 	while (flag&&(retValue = pcap_next_ex(handle, &Packet_Header, &Packet_Data)) >= 0) {
 		if (retValue == 0)
 			continue;
-			Analyse* analyse = new Analyse(Packet_Header, Packet_Data, window);
+		else {
+			QByteArray array;
+			array.resize(Packet_Header->len);
+			memcpy(array.data(), Packet_Data, Packet_Header->caplen);
+			Analyse* analyse = new Analyse(std::move(array), Packet_Header->caplen, window);
 			QThreadPool::globalInstance()->start(analyse);
+		}
 	}
 }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MyWinsharkClass</class>
- <widget class="QWidget" name="MyWinsharkClass">
+ <class>MyWireSharkClass</class>
+ <widget class="QWidget" name="MyWireSharkClass">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MyWinshark</string>
+   <string>MyWireShark</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -60,7 +60,7 @@
          </size>
         </property>
         <property name="text">
-         <string>选择网卡</string>
+         <string>选择</string>
         </property>
        </widget>
       </item>
@@ -222,7 +222,7 @@
          <enum>QAbstractItemView::ScrollPerPixel</enum>
         </property>
         <property name="columnCount">
-         <number>3</number>
+         <number>8</number>
         </property>
         <attribute name="headerVisible">
          <bool>false</bool>
@@ -231,7 +231,7 @@
          <bool>true</bool>
         </attribute>
         <attribute name="headerDefaultSectionSize">
-         <number>200</number>
+         <number>250</number>
         </attribute>
         <attribute name="headerStretchLastSection">
          <bool>true</bool>
@@ -249,6 +249,31 @@
         <column>
          <property name="text">
           <string notr="true">3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">4</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">5</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">6</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">7</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">8</string>
          </property>
         </column>
        </widget>
@@ -361,7 +386,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="MyWinshark.qrc"/>
+  <include location="MyWireShark.qrc"/>
  </resources>
  <connections/>
 </ui>

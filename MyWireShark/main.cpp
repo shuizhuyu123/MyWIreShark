@@ -1,10 +1,10 @@
-#include "MyWinshark.h"
+#include "MyWireShark.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MyWinshark w;
+    MyWireShark w;
     w.show();
     return a.exec();
 }

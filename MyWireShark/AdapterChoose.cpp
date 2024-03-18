@@ -1,6 +1,6 @@
 #include "AdapterChoose.h"
-#include "MyWinshark.h"
-class MyWinshark;
+#include "MyWireShark.h"
+class MyWireShark;
 AdapterChoose::AdapterChoose(QStringList adapters,QWidget *parent)
 	: QDialog(parent)
 {

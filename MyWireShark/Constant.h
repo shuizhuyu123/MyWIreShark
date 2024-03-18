@@ -1,4 +1,5 @@
 #pragma once
+
 typedef struct ether_header
 {
     unsigned char ether_dhost[6];    // 目标地址
@@ -54,3 +55,14 @@ typedef struct ICMPHeader
     unsigned short m_usID;					// 标识符
     unsigned short m_usSeq;					// 序号
 }icmphead;
+typedef struct DNSHeader {
+    unsigned short TransactionID;
+    unsigned short Flag;
+    unsigned short QUestions;
+    unsigned short Answer_RRS;
+    unsigned short Authority_RRS;
+    unsigned short Additonal_RRS;
+}dnshead;
+typedef struct DnsData {
+
+}dnsdata;

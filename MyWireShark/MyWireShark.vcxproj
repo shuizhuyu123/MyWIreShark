@@ -22,6 +22,7 @@
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>MyWireShark</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -38,12 +39,12 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>5.15.2_msvc2019_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;widgets;concurrent</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>5.15.2_msvc2019_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;widgets;concurrent</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -67,6 +68,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>D:\npcap\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\npcap\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -110,17 +112,18 @@
     <ClCompile Include="AdapterChoose.cpp" />
     <ClCompile Include="Analyse.cpp" />
     <ClCompile Include="Sniffer.cpp" />
-    <QtRcc Include="MyWinshark.qrc" />
+    <QtRcc Include="MyWireShark.qrc" />
     <QtUic Include="AdapterChoose.ui" />
-    <QtUic Include="MyWinshark.ui" />
-    <QtMoc Include="MyWinshark.h" />
-    <ClCompile Include="MyWinshark.cpp" />
+    <QtUic Include="MyWireShark.ui" />
+    <QtMoc Include="MyWireShark.h" />
+    <ClCompile Include="MyWireShark.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Sniffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ProtocalData.h" />
     <QtMoc Include="AdapterChoose.h" />
     <ClInclude Include="Analyse.h" />
   </ItemGroup>

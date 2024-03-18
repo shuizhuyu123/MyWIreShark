@@ -23,16 +23,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="MyWinshark.qrc">
+    <QtRcc Include="MyWireShark.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="MyWinshark.ui">
+    <QtUic Include="MyWireShark.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtMoc Include="MyWinshark.h">
+    <QtMoc Include="MyWireShark.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="MyWinshark.cpp">
+    <ClCompile Include="MyWireShark.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Analyse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtocalData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
